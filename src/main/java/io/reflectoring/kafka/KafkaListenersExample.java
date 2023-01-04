@@ -16,31 +16,36 @@ class KafkaListenersExample {
 
     private final Logger LOG = LoggerFactory.getLogger(KafkaListenersExample.class);
 
-    @KafkaListener(topics = "advice-topic")
+    @KafkaListener(topics = "reflectoring-1")
     void listener(String message) {
         LOG.info("Listener [{}]", message);
     }
 
-    @KafkaListener(topicPartitions = @TopicPartition(topic = "advice-topic", partitionOffsets = {
-            @PartitionOffset(partition = "0", initialOffset = "0") }), groupId = "tpd-loggers")
+    @KafkaListener(topics = { "reflectoring-1", "reflectoring-2" }, groupId = "reflectoring-group-2")
+    void commonListenerForMultipleTopics(String message) {
+        LOG.info("MultipleTopicListener - [{}]", message);
+    }
+
+    @KafkaListener(topicPartitions = @TopicPartition(topic = "reflectoring-3", partitionOffsets = {
+            @PartitionOffset(partition = "0", initialOffset = "0") }), groupId = "reflectoring-group-3")
     void listenToParitionWithOffset(@Payload String message, @Header(KafkaHeaders.RECEIVED_PARTITION_ID) int partition,
                                     @Header(KafkaHeaders.OFFSET) int offset) {
         LOG.info("ListenToPartitionWithOffset [{}] from partition-{} with offset-{}", message, partition, offset);
     }
 
-    @KafkaListener(topics = "advice-topic")
+    @KafkaListener(topics = "reflectoring-bytes")
     void listenerForRoutingTemplate(String message) {
         LOG.info("RoutingTemplate BytesListener [{}]", message);
     }
 
-    @KafkaListener(topics = "advice-topic")
-    @SendTo("advice-topic")
+    @KafkaListener(topics = "reflectoring-others")
+    @SendTo("reflectoring-2")
     String listenAndReply(String message) {
         LOG.info("ListenAndReply [{}]", message);
-        return "This is a reply sent to 'advice-topic' topic after receiving message at 'advice-topic' topic";
+        return "This is a reply sent to 'reflectoring-2' topic after receiving message at 'reflectoring-others' topic";
     }
 
-    @KafkaListener(id = "1", topics = "advice-topic", groupId = "tpd-loggers", containerFactory = "kafkaJsonListenerContainerFactory")
+    @KafkaListener(id = "1", topics = "reflectoring-user", groupId = "reflectoring-user-mc", containerFactory = "kafkaJsonListenerContainerFactory")
     void listenerWithMessageConverter(User user) {
         LOG.info("MessageConverterUserListener [{}]", user);
     }
