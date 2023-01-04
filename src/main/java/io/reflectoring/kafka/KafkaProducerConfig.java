@@ -52,7 +52,7 @@ class KafkaProducerConfig {
     KafkaTemplate<String, String> kafkaTemplate() {
         KafkaTemplate<String, String> kafkaTemplate = new KafkaTemplate<>(producerFactory());
         kafkaTemplate.setMessageConverter(new StringJsonMessageConverter());
-        kafkaTemplate.setDefaultTopic("reflectoring-user");
+        kafkaTemplate.setDefaultTopic("advice-topic");
         kafkaTemplate.setProducerListener(new ProducerListener<String, String>() {
             @Override
             public void onSuccess(ProducerRecord<String, String> producerRecord, RecordMetadata recordMetadata) {
